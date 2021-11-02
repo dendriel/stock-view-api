@@ -1,9 +1,8 @@
 package com.rozsa.stockviewapi.dto;
 
-import lombok.AllArgsConstructor;
+import com.rozsa.stockviewapi.parser.NumberParser;
 import lombok.Data;
 
-@AllArgsConstructor
 @Data
 public class StockSearchResultDto {
     private Long id;
@@ -16,5 +15,13 @@ public class StockSearchResultDto {
     private boolean variationUp;
     private Integer type;
     private String url;
+
+    public void setPrice(String price) {
+        this.price = NumberParser.parseCommaSeparatedDouble(price);
+    }
+
+    public void setVariation(String variation) {
+        this.variation = NumberParser.parseCommaSeparatedDouble(variation);
+    }
 }
 
