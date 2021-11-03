@@ -1,5 +1,6 @@
 package com.rozsa.stockviewapi.service.impl;
 
+import com.rozsa.stockviewapi.dto.StockPriceDto;
 import com.rozsa.stockviewapi.dto.StockSearchResultDto;
 import com.rozsa.stockviewapi.service.StockDataService;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,5 +24,12 @@ public class StatusInvestStockDataService implements StockDataService {
                 .uri(String.format("/home/mainsearchquery?q=%s", query))
                 .retrieve()
                 .bodyToFlux(StockSearchResultDto.class);
+    }
+
+    public Flux<StockPriceDto> getPrices(String ticker) {
+        return client.get()
+                .uri(String.format("/acao/tickerprice?ticker=%s&type=0&currences[]=1", ticker))
+                .retrieve()
+                .bodyToFlux(StockPriceDto.class);
     }
 }
