@@ -1,8 +1,10 @@
 package com.rozsa.stockviewapi.api;
 
 import com.rozsa.stockviewapi.business.SearchStock;
+import com.rozsa.stockviewapi.configuration.ReactiveRedisOperationsFactory;
 import com.rozsa.stockviewapi.dto.StockSearchResultDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.ReactiveRedisOperations;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,11 +24,18 @@ public class SearchStockApi {
         return stockSearchResultOps
                 .hasKey(query)
                 .flatMapMany(exists -> exists ?
-                    stockSearchResultOps.opsForList().range(query, 0, -1)
+                    stockSearchResultOps.opsForList()
+                            .range(query, 0, -1)
                     : stockSearch.search(query)
-                        .flatMap(searchResult -> stockSearchResultOps.opsForList().leftPush(query, searchResult).map(res -> searchResult))
+                        .flatMap(searchResult -> stockSearchResultOps.opsForList()
+                                .leftPush(query, searchResult)
+                                .map(res -> searchResult)
+                        )
                 );
+    }
 
-
+    @Bean
+    static ReactiveRedisOperations<String, StockSearchResultDto> getRedisOps(ReactiveRedisOperationsFactory<StockSearchResultDto> factory) {
+        return factory.getOps(StockSearchResultDto.class);
     }
 }
