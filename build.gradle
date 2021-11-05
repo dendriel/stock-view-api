@@ -9,18 +9,15 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
 repositories {
+    mavenLocal()
     mavenCentral()
-}
-
-ext {
-    springVersion = '2.5.5'
-    lombokVersion = '1.18.22'
-    reactorTestVersion = '3.4.11'
 }
 
 dependencies {
     implementation "org.springframework.boot:spring-boot-starter-data-redis-reactive:${springVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux:${springVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-data-redis:${springVersion}"
+
 
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
