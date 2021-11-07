@@ -18,21 +18,26 @@ public final class CachedOperations<T> {
         return new CachedOperations<T>(factory.getOps(clazz));
     }
 
-    public Flux<T> getFlux(String key, Function<String, Flux<T>> retrieveFunc) {
-        return getFlux(key, () -> retrieveFunc.apply(key));
+    public Flux<T> getFlux(String key, Function<String, Flux<T>> fetchFunc) {
+        return getFlux(key, () -> fetchFunc.apply(key));
     }
 
-    public Flux<T> getFlux(String key, Supplier<Flux<T>> retrieveFunc) {
+    public Flux<T> getFlux(String key, Supplier<Flux<T>> fetchFunc) {
         return redisOps
                 .hasKey(key)
-                .flatMapMany(exists -> exists ?
-                        redisOps.opsForList()
-                                .range(key, 0, -1)
-                        : retrieveFunc.get()
-                        .flatMap(searchResult -> redisOps.opsForList()
-                                .leftPush(key, searchResult)
-                                .map(res -> searchResult)
-                        )
+                .flatMapMany(exists -> exists ? loadCached(key) : fetchAndSave(key, fetchFunc));
+    }
+
+    private Flux<T> loadCached(String key) {
+        return redisOps.opsForList()
+                .range(key, 0, -1);
+    }
+
+    private Flux<T> fetchAndSave(String key, Supplier<Flux<T>> fetchFunc) {
+        return fetchFunc.get()
+                .flatMap(result -> redisOps.opsForList()
+                        .leftPush(key, result)
+                        .map(res -> result)
                 );
     }
 }
