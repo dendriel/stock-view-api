@@ -1,11 +1,11 @@
 package com.rozsa.stockviewapi.api;
 
 import com.rozsa.stockviewapi.business.SearchStock;
+import com.rozsa.stockviewapi.configuration.CachedOperations;
 import com.rozsa.stockviewapi.configuration.ReactiveRedisOperationsFactory;
 import com.rozsa.stockviewapi.dto.StockSearchResultDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.redis.core.ReactiveRedisOperations;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,26 +16,16 @@ import reactor.core.publisher.Flux;
 @RestController
 @RequestMapping("/stock")
 public class SearchStockApi {
-    private final ReactiveRedisOperations<String, StockSearchResultDto> stockSearchResultOps;
+    private final CachedOperations<StockSearchResultDto> cachedOperations;
     private final SearchStock stockSearch;
 
     @GetMapping("/search")
     public Flux<StockSearchResultDto> search(@RequestParam("query") String query) {
-        return stockSearchResultOps
-                .hasKey(query)
-                .flatMapMany(exists -> exists ?
-                    stockSearchResultOps.opsForList()
-                            .range(query, 0, -1)
-                    : stockSearch.search(query)
-                        .flatMap(searchResult -> stockSearchResultOps.opsForList()
-                                .leftPush(query, searchResult)
-                                .map(res -> searchResult)
-                        )
-                );
+        return cachedOperations.getFlux(query, stockSearch::search);
     }
 
     @Bean
-    static ReactiveRedisOperations<String, StockSearchResultDto> getRedisOps(ReactiveRedisOperationsFactory<StockSearchResultDto> factory) {
-        return factory.getOps(StockSearchResultDto.class);
+    static CachedOperations<StockSearchResultDto> getStockSearchResultCachedOperations(ReactiveRedisOperationsFactory<StockSearchResultDto> factory) {
+        return CachedOperations.of(factory, StockSearchResultDto.class);
     }
 }
