@@ -1,8 +1,8 @@
-package com.rozsa.stockviewapi.service.impl;
+package com.rozsa.stockviewapi.integration.service.impl;
 
 import com.rozsa.stockviewapi.dto.StockPriceDto;
 import com.rozsa.stockviewapi.dto.StockSearchResultDto;
-import com.rozsa.stockviewapi.service.StockDataService;
+import com.rozsa.stockviewapi.integration.service.StockDataService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;

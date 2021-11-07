@@ -1,4 +1,4 @@
-package com.rozsa.stockviewapi.service;
+package com.rozsa.stockviewapi.integration.service;
 
 import com.rozsa.stockviewapi.dto.StockPriceDto;
 import com.rozsa.stockviewapi.dto.StockSearchResultDto;
