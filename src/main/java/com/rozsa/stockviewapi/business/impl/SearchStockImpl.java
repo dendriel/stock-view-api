@@ -10,7 +10,6 @@ import reactor.core.publisher.Flux;
 @AllArgsConstructor
 @Service
 public class SearchStockImpl implements SearchStock {
-
     private final StockDataService stockDataService;
 
     public Flux<StockSearchResultDto> search(String query) {
