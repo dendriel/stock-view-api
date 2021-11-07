@@ -1,6 +1,7 @@
 package com.rozsa.stockviewapi.cache;
 
 import org.springframework.data.redis.core.ReactiveRedisOperations;
+import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -10,13 +11,23 @@ import java.util.function.Supplier;
 
 public final class CachedOperations<T> {
     private final ReactiveRedisOperations<String, T> redisOps;
+    private final String keyPrefix;
 
-    private CachedOperations(ReactiveRedisOperations<String, T> redisOps) {
+    private CachedOperations(ReactiveRedisOperations<String, T> redisOps, String keyPrefix) {
         this.redisOps = redisOps;
+        this.keyPrefix = keyPrefix;
     }
 
     public static <T> CachedOperations<T> of(ReactiveRedisOperationsFactory<T> factory, Class<T> clazz) {
-        return new CachedOperations<>(factory.getOps(clazz));
+        return of(factory, clazz, "");
+    }
+
+    public static <T> CachedOperations<T> of(ReactiveRedisOperationsFactory<T> factory, Class<T> clazz, String keyPrefix) {
+        return new CachedOperations<>(factory.getOps(clazz), keyPrefix);
+    }
+
+    public String formatKey(String key) {
+        return StringUtils.hasText(keyPrefix) ? String.format("%s_%s", keyPrefix, key) : key;
     }
 
     public Mono<T> getMono(String key, Function<String, Mono<T>> fetchFunc) {
@@ -24,18 +35,20 @@ public final class CachedOperations<T> {
     }
 
     public Mono<T> getMono(String key, Supplier<Mono<T>> fetchFunc) {
-        return redisOps.hasKey(key)
-                .flatMap(exists -> exists ? loadCachedMono(key) : fetchAndSaveMono(key, fetchFunc));
+        final String formattedKey = formatKey(key);
+        return redisOps.hasKey(formattedKey)
+                .flatMap(exists -> exists ? loadCachedMono(formattedKey) : fetchAndSaveMono(formattedKey, fetchFunc));
     }
 
-    private Mono<T> loadCachedMono(String key) {
-        return redisOps.opsForValue().get(key);
+    private Mono<T> loadCachedMono(String formattedKey) {
+        return redisOps.opsForValue()
+                .get(formattedKey);
     }
 
-    private Mono<T> fetchAndSaveMono(String key, Supplier<Mono<T>> fetchFunc) {
+    private Mono<T> fetchAndSaveMono(String formattedKey, Supplier<Mono<T>> fetchFunc) {
         return fetchFunc.get()
-                .flatMap(result -> redisOps.opsForList()
-                        .leftPush(key, result)
+                .flatMap(result -> redisOps.opsForValue()
+                        .set(formattedKey, result)
                         .thenReturn(result)
                 );
     }
@@ -45,19 +58,20 @@ public final class CachedOperations<T> {
     }
 
     public Flux<T> getFlux(String key, Supplier<Flux<T>> fetchFunc) {
-        return redisOps.hasKey(key)
-                .flatMapMany(exists -> exists ? loadCached(key) : fetchAndSave(key, fetchFunc));
+        final String formattedKey = formatKey(key);
+        return redisOps.hasKey(formattedKey)
+                .flatMapMany(exists -> exists ? loadCached(formattedKey) : fetchAndSave(formattedKey, fetchFunc));
     }
 
-    private Flux<T> loadCached(String key) {
+    private Flux<T> loadCached(String formattedKey) {
         return redisOps.opsForList()
-                .range(key, 0, -1);
+                .range(formattedKey, 0, -1);
     }
 
-    private Flux<T> fetchAndSave(String key, Supplier<Flux<T>> fetchFunc) {
+    private Flux<T> fetchAndSave(String formattedKey, Supplier<Flux<T>> fetchFunc) {
         return fetchFunc.get()
                 .flatMap(result -> redisOps.opsForList()
-                        .leftPush(key, result)
+                        .leftPush(formattedKey, result)
                         .thenReturn(result)
                 );
     }

@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
+import static com.rozsa.stockviewapi.cache.CacheIndex.STOCK_SEARCH_RESULTS;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/stock")
@@ -26,6 +28,6 @@ public class SearchStockApi {
 
     @Bean
     static CachedOperations<StockSearchResultServiceDto> getStockSearchResultCachedOperations(ReactiveRedisOperationsFactory<StockSearchResultServiceDto> factory) {
-        return CachedOperations.of(factory, StockSearchResultServiceDto.class);
+        return CachedOperations.of(factory, StockSearchResultServiceDto.class, STOCK_SEARCH_RESULTS.name());
     }
 }

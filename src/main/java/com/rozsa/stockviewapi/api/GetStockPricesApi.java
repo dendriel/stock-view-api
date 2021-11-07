@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
+import static com.rozsa.stockviewapi.cache.CacheIndex.STOCK_PRICES;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/stock")
@@ -26,6 +28,6 @@ public class GetStockPricesApi {
 
     @Bean
     static CachedOperations<StockPriceServiceDto> getStockPriceCachedOperations(ReactiveRedisOperationsFactory<StockPriceServiceDto> factory) {
-        return CachedOperations.of(factory, StockPriceServiceDto.class);
+        return CachedOperations.of(factory, StockPriceServiceDto.class, STOCK_PRICES.name());
     }
 }

@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+import static com.rozsa.stockviewapi.cache.CacheIndex.STOCK_INDICATORS;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/stock")
@@ -26,6 +28,6 @@ public class GetStockIndicatorsApi {
 
     @Bean
     static CachedOperations<StockIndicatorsServiceDto> getStockIndicatorsCachedOperations(ReactiveRedisOperationsFactory<StockIndicatorsServiceDto> factory) {
-        return CachedOperations.of(factory, StockIndicatorsServiceDto.class);
+        return CachedOperations.of(factory, StockIndicatorsServiceDto.class, STOCK_INDICATORS.name());
     }
 }
