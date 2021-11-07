@@ -1,4 +1,4 @@
-package com.rozsa.stockviewapi.configuration;
+package com.rozsa.stockviewapi.cache;
 
 import org.springframework.data.redis.core.ReactiveRedisOperations;
 import reactor.core.publisher.Flux;
@@ -16,24 +16,27 @@ public final class CachedOperations<T> {
     }
 
     public static <T> CachedOperations<T> of(ReactiveRedisOperationsFactory<T> factory, Class<T> clazz) {
-        return new CachedOperations<T>(factory.getOps(clazz));
+        return new CachedOperations<>(factory.getOps(clazz));
     }
 
     public Mono<T> getMono(String key, Function<String, Mono<T>> fetchFunc) {
         return getMono(key, () -> fetchFunc.apply(key));
     }
 
-
     public Mono<T> getMono(String key, Supplier<Mono<T>> fetchFunc) {
         return redisOps.hasKey(key)
-                .flatMap(exists -> exists ?
-                        redisOps.opsForValue().get(key)
-                        :
-                        fetchFunc.get()
-                                .flatMap(result -> redisOps.opsForValue()
-                                        .set(key, result)
-                                        .thenReturn(result)
-                        )
+                .flatMap(exists -> exists ? loadCachedMono(key) : fetchAndSaveMono(key, fetchFunc));
+    }
+
+    private Mono<T> loadCachedMono(String key) {
+        return redisOps.opsForValue().get(key);
+    }
+
+    private Mono<T> fetchAndSaveMono(String key, Supplier<Mono<T>> fetchFunc) {
+        return fetchFunc.get()
+                .flatMap(result -> redisOps.opsForList()
+                        .leftPush(key, result)
+                        .thenReturn(result)
                 );
     }
 

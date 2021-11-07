@@ -1,8 +1,8 @@
 package com.rozsa.stockviewapi.api;
 
 import com.rozsa.stockviewapi.business.GetStockIndicators;
-import com.rozsa.stockviewapi.configuration.CachedOperations;
-import com.rozsa.stockviewapi.configuration.ReactiveRedisOperationsFactory;
+import com.rozsa.stockviewapi.cache.CachedOperations;
+import com.rozsa.stockviewapi.cache.ReactiveRedisOperationsFactory;
 import com.rozsa.stockviewapi.integration.service.dto.StockIndicatorsServiceDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

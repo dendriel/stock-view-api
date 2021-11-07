@@ -6,6 +6,15 @@ server:
     include-stacktrace: on_param
     include-exception: true
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health"
+  endpoint:
+    health:
+      show-details: never
+
 #SPRING_WEBFLUX_BASE_PATH=/api
 
 spring:

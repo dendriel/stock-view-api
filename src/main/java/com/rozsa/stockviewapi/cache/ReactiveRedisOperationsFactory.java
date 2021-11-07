@@ -1,4 +1,4 @@
-package com.rozsa.stockviewapi.configuration;
+package com.rozsa.stockviewapi.cache;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;

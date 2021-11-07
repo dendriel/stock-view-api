@@ -17,6 +17,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-data-redis-reactive:${springVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux:${springVersion}"
     implementation "org.springframework.boot:spring-boot-starter-data-redis:${springVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-actuator:${springVersion}"
 
 
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
