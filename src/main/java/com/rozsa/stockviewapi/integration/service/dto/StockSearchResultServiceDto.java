@@ -1,10 +1,10 @@
-package com.rozsa.stockviewapi.dto;
+package com.rozsa.stockviewapi.integration.service.dto;
 
 import com.rozsa.stockviewapi.parser.NumberParser;
 import lombok.Data;
 
 @Data
-public class StockSearchResultDto {
+public class StockSearchResultServiceDto {
     private Long id;
     private Long parentId;
     private String nameFormated;

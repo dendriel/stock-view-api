@@ -1,8 +1,8 @@
 package com.rozsa.stockviewapi.business;
 
-import com.rozsa.stockviewapi.dto.StockPriceDto;
+import com.rozsa.stockviewapi.integration.service.dto.StockPriceServiceDto;
 import reactor.core.publisher.Flux;
 
 public interface GetStockPrices {
-    Flux<StockPriceDto> getPrices(String ticker);
+    Flux<StockPriceServiceDto> getPrices(String ticker);
 }

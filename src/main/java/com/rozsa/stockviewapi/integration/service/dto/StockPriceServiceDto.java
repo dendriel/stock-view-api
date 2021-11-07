@@ -1,11 +1,11 @@
-package com.rozsa.stockviewapi.dto;
+package com.rozsa.stockviewapi.integration.service.dto;
 
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class StockPriceDto {
+public class StockPriceServiceDto {
     private String symbol;
     private List<Price> prices;
 
