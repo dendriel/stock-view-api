@@ -3,6 +3,7 @@ package com.rozsa.stockviewapi.api;
 import com.rozsa.stockviewapi.business.GetStockIndicators;
 import com.rozsa.stockviewapi.cache.CachedOperations;
 import com.rozsa.stockviewapi.cache.ReactiveRedisOperationsFactory;
+import com.rozsa.stockviewapi.dto.StockIndicatorsDto;
 import com.rozsa.stockviewapi.integration.service.dto.StockIndicatorsServiceDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -18,16 +19,16 @@ import static com.rozsa.stockviewapi.cache.CacheIndex.STOCK_INDICATORS;
 @RestController
 @RequestMapping("/stock")
 public class GetStockIndicatorsApi {
-    private final CachedOperations<StockIndicatorsServiceDto> cachedOperations;
+    private final CachedOperations<StockIndicatorsDto> cachedOperations;
     private final GetStockIndicators getStockIndicators;
 
     @GetMapping("/indicators")
-    public Mono<StockIndicatorsServiceDto> get(@RequestParam("ticker") String ticker) {
+    public Mono<StockIndicatorsDto> get(@RequestParam("ticker") String ticker) {
         return cachedOperations.getMono(ticker, getStockIndicators::getIndicators);
     }
 
     @Bean
-    static CachedOperations<StockIndicatorsServiceDto> getStockIndicatorsCachedOperations(ReactiveRedisOperationsFactory<StockIndicatorsServiceDto> factory) {
-        return CachedOperations.of(factory, StockIndicatorsServiceDto.class, STOCK_INDICATORS.name());
+    static CachedOperations<StockIndicatorsDto> getStockIndicatorsCachedOperations(ReactiveRedisOperationsFactory<StockIndicatorsDto> factory) {
+        return CachedOperations.of(factory, StockIndicatorsDto.class, STOCK_INDICATORS.name());
     }
 }

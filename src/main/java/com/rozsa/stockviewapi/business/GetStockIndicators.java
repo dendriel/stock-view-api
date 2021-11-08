@@ -1,9 +1,9 @@
 package com.rozsa.stockviewapi.business;
 
-import com.rozsa.stockviewapi.integration.service.dto.StockIndicatorsServiceDto;
+import com.rozsa.stockviewapi.dto.StockIndicatorsDto;
 import reactor.core.publisher.Mono;
 
 public interface GetStockIndicators {
-    Mono<StockIndicatorsServiceDto> getIndicators(String ticker);
+    Mono<StockIndicatorsDto> getIndicators(String ticker);
 
 }
