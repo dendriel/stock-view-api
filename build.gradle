@@ -18,10 +18,12 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-webflux:${springVersion}"
     implementation "org.springframework.boot:spring-boot-starter-data-redis:${springVersion}"
     implementation "org.springframework.boot:spring-boot-starter-actuator:${springVersion}"
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
 
 
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 
 
     testImplementation "org.springframework.boot:spring-boot-starter-test:${springVersion}"

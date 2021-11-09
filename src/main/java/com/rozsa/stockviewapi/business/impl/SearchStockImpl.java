@@ -1,7 +1,8 @@
 package com.rozsa.stockviewapi.business.impl;
 
 import com.rozsa.stockviewapi.business.SearchStock;
-import com.rozsa.stockviewapi.integration.service.dto.StockSearchResultServiceDto;
+import com.rozsa.stockviewapi.dto.StockSearchResultDto;
+import com.rozsa.stockviewapi.dto.mapper.StockSearchResultMapper;
 import com.rozsa.stockviewapi.integration.service.StockDataService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,12 @@ import reactor.core.publisher.Flux;
 public class SearchStockImpl implements SearchStock {
     private final StockDataService stockDataService;
 
-    public Flux<StockSearchResultServiceDto> search(String query) {
-        return stockDataService.search(query);
+    private final StockSearchResultMapper stockSearchResultMapper;
+
+    public Flux<StockSearchResultDto> search(String query) {
+        return stockDataService
+                .search(query)
+                .flatMapMany(data ->  Flux.fromIterable(data.getData()))
+                .flatMap(stockSearchResultMapper::fromDtoToMono);
     }
 }

@@ -22,13 +22,13 @@ public class StatusInvestStockDataService implements StockDataService {
         this.client = client;
     }
 
-    public Flux<StockSearchResultServiceDto> search(final String query) {
+    public Mono<StockSearchResultServiceDto> search(final String query) {
         log.info("Search stock {}", query);
 
         return client.get()
                 .uri(String.format("/home/mainsearchquery?q=%s", query))
                 .retrieve()
-                .bodyToFlux(StockSearchResultServiceDto.class);
+                .bodyToMono(StockSearchResultServiceDto.class);
     }
 
     public Flux<StockPriceServiceDto> getPrices(final String ticker) {

@@ -1,8 +1,8 @@
 package com.rozsa.stockviewapi.business;
 
-import com.rozsa.stockviewapi.integration.service.dto.StockSearchResultServiceDto;
+import com.rozsa.stockviewapi.dto.StockSearchResultDto;
 import reactor.core.publisher.Flux;
 
 public interface SearchStock {
-    Flux<StockSearchResultServiceDto> search(String query);
+    Flux<StockSearchResultDto> search(String query);
 }

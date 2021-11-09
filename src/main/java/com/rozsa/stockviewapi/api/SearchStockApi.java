@@ -3,7 +3,7 @@ package com.rozsa.stockviewapi.api;
 import com.rozsa.stockviewapi.business.SearchStock;
 import com.rozsa.stockviewapi.cache.CachedOperations;
 import com.rozsa.stockviewapi.cache.ReactiveRedisOperationsFactory;
-import com.rozsa.stockviewapi.integration.service.dto.StockSearchResultServiceDto;
+import com.rozsa.stockviewapi.dto.StockSearchResultDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,16 +18,16 @@ import static com.rozsa.stockviewapi.cache.CacheIndex.STOCK_SEARCH_RESULTS;
 @RestController
 @RequestMapping("/stock")
 public class SearchStockApi {
-    private final CachedOperations<StockSearchResultServiceDto> cachedOperations;
+    private final CachedOperations<StockSearchResultDto> cachedOperations;
     private final SearchStock stockSearch;
 
     @GetMapping("/search")
-    public Flux<StockSearchResultServiceDto> search(@RequestParam("query") String query) {
+    public Flux<StockSearchResultDto> search(@RequestParam("query") String query) {
         return cachedOperations.getFlux(query, stockSearch::search);
     }
 
     @Bean
-    static CachedOperations<StockSearchResultServiceDto> getStockSearchResultCachedOperations(ReactiveRedisOperationsFactory<StockSearchResultServiceDto> factory) {
-        return CachedOperations.of(factory, StockSearchResultServiceDto.class, STOCK_SEARCH_RESULTS.name());
+    static CachedOperations<StockSearchResultDto> getStockSearchResultCachedOperations(ReactiveRedisOperationsFactory<StockSearchResultDto> factory) {
+        return CachedOperations.of(factory, StockSearchResultDto.class, STOCK_SEARCH_RESULTS.name());
     }
 }
