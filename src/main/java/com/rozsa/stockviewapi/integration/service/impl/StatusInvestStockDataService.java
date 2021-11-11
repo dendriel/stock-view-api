@@ -1,5 +1,6 @@
 package com.rozsa.stockviewapi.integration.service.impl;
 
+import com.rozsa.stockviewapi.dto.StockSearchResultDto;
 import com.rozsa.stockviewapi.integration.service.dto.StockPriceServiceDto;
 import com.rozsa.stockviewapi.integration.service.dto.StockSearchResultServiceDto;
 import com.rozsa.stockviewapi.integration.service.StockDataService;
@@ -22,13 +23,22 @@ public class StatusInvestStockDataService implements StockDataService {
         this.client = client;
     }
 
-    public Mono<StockSearchResultServiceDto> search(final String query) {
+    public Mono<StockSearchResultServiceDto> searchMono(final String query) {
         log.info("Search stock {}", query);
 
         return client.get()
                 .uri(String.format("/home/mainsearchquery?q=%s", query))
                 .retrieve()
                 .bodyToMono(StockSearchResultServiceDto.class);
+    }
+
+    public Flux<StockSearchResultServiceDto.Result> searchFlux(final String query) {
+        log.info("Search stock {}", query);
+
+        return client.get()
+                .uri(String.format("/home/mainsearchquery?q=%s", query))
+                .retrieve()
+                .bodyToFlux(StockSearchResultServiceDto.Result.class);
     }
 
     public Flux<StockPriceServiceDto> getPrices(final String ticker) {

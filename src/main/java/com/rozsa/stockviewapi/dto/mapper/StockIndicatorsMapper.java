@@ -17,8 +17,9 @@ public class StockIndicatorsMapper {
         StockIndicatorsDto toDto = new StockIndicatorsDto();
 
         Map<String, List<StockIndicatorsServiceDto.Indicator>> data = serviceDto.getData();
-        if (data.size() == 0) {
+        if (data == null || data.size() == 0) {
             log.warn("Data from stock indicators service DTO is empty! Success? {}", serviceDto.getSuccess());
+            // TODO: return Mono.error()
             return Mono.just(toDto);
         }
 

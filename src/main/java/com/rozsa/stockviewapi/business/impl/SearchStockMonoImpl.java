@@ -13,16 +13,16 @@ import reactor.core.publisher.Flux;
 @Service
 @ConditionalOnProperty(
         value="business.stock.search.flux",
-        havingValue = "true",
-        matchIfMissing = true)
-public class SearchStockImpl implements SearchStock {
+        havingValue = "false")
+public class SearchStockMonoImpl implements SearchStock {
     private final StockDataService stockDataService;
 
     private final StockSearchResultMapper stockSearchResultMapper;
 
     public Flux<StockSearchResultDto> search(String query) {
         return stockDataService
-                .searchFlux(query)
+                .searchMono(query)
+                .flatMapMany(data ->  Flux.fromIterable(data.getData()))
                 .flatMap(stockSearchResultMapper::fromDtoToMono);
     }
 }

@@ -1,6 +1,5 @@
 package com.rozsa.stockviewapi.dto;
 
-import com.rozsa.stockviewapi.parser.NumberParser;
 import lombok.Data;
 
 @Data

@@ -12,7 +12,14 @@ public interface StockDataService {
      * @param query stock name.
      * @return search results.
      */
-    Mono<StockSearchResultServiceDto> search(String query);
+    Mono<StockSearchResultServiceDto> searchMono(String query);
+
+    /**
+     * Search stocks by name.
+     * @param query
+     * @return search results as a Flux.
+     */
+    Flux<StockSearchResultServiceDto.Result> searchFlux(final String query);
 
     /**
      * Get stock price information from previous days.
