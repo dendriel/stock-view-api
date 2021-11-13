@@ -9,7 +9,10 @@ import io.netty.handler.codec.http.HttpHeaderValues;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -58,6 +61,8 @@ public class StatusInvestStockDataService implements StockDataService {
                 .body(Mono.just(String.format("codes[]=%s&time=7&byQuarter=false", ticker)), String.class)
                 .header(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
                 .retrieve()
-                .bodyToMono(StockIndicatorsServiceDto.class);
+                .bodyToMono(StockIndicatorsServiceDto.class)
+                .flatMap(dto ->
+                        dto.getSuccess() ? Mono.just(dto) : Mono.error(new HttpServerErrorException(HttpStatus.NOT_FOUND)));
     }
 }
